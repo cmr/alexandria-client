@@ -212,7 +212,7 @@ impl Server<Auth> {
         let base = self.base_url.as_slice();
         let url = Url::parse(format!("{}://{}/book/{}", self.proto.proto(), base, isbn).as_slice())
             .ok().expect("Invalid ISBN!");
-        do_put(url, Some(book))
+        do_post(url, Some(book))
     }
 
     /// Add a book to the library.
@@ -222,7 +222,7 @@ impl Server<Auth> {
         let base = self.base_url.as_slice();
         let url = Url::parse(format!("{}://{}/book", self.proto.proto(), base).as_slice())
             .ok().expect("Invalid ISBN!");
-        do_post(url, Some(book))
+        do_put(url, Some(book))
     }
 
     /// Remove a book from the library.
