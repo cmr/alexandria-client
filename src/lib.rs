@@ -58,25 +58,25 @@ fn do_req<'a, T, U>(url: Url, data: Option<T>,
         where
         T : serialize::Encodable<json::Encoder<'a>, std::io::IoError>,
         U : serialize::Decodable<json::Decoder, json::DecoderError> {
-    let req = try_error!(cb(url), HttpError);
-    let mut req = try_error!(req.start(), HttpError);
+    let req = try_error!(cb(url), Error::HttpError);
+    let mut req = try_error!(req.start(), Error::HttpError);
     match data {
         Some(obj) => {
             let enc = json::encode(&obj);
-            try_error!(req.write(enc.as_bytes()), IoError);
+            try_error!(req.write(enc.as_bytes()), Error::IoError);
         },
         None => ()
     }
-    let mut resp = try_error!(req.send(), HttpError);
+    let mut resp = try_error!(req.send(), Error::HttpError);
     match resp.status {
-        status::NotFound => return Err(NotFound),
-        status::InternalServerError => return Err(InternalError),
-        status::Unauthorized => return Err(AuthError),
+        status::NotFound => return Err(Error::NotFound),
+        status::InternalServerError => return Err(Error::InternalError),
+        status::Unauthorized => return Err(Error::AuthError),
         status::Ok => (),
-        _ => return Err(ApiSaidNo),
+        _ => return Err(Error::ApiSaidNo),
     }
-    let str = try_error!(resp.read_to_string(), IoError);
-    let val: U = try_error!(json::decode(str.as_slice()), JsonError);
+    let str = try_error!(resp.read_to_string(), Error::IoError);
+    let val: U = try_error!(json::decode(str.as_slice()), Error::JsonError);
     Ok(val)
 }
 
@@ -113,7 +113,7 @@ impl Proto for Auth {
 }
 
 impl Proto for Unauth {
-    fn proto(&self) -> &'static str { "http" }
+    fn proto(&self) -> &'static str { "https" }
 }
 
 // Generic methods should not be able to access privileged data.
@@ -234,5 +234,13 @@ impl Server<Auth> {
         let url = Url::parse(format!("{}://{}/book/{}", self.proto.proto(), base, isbn).as_slice())
             .ok().expect("Invalid ISBN!");
         do_delete(url, None::<int>)
+    }
+
+    /// Register a book in the library.
+    pub fn register_book(&self, isbn: &str) -> APIResult<bool> {
+        let base = self.base_url.as_slice();
+        let url = Url::parse(format!("{}://{}/book/{}", self.proto.proto(), base, isbn).as_slice())
+            .ok().expect("Invalid ISBN!");
+        do_put(url, Some(isbn))
     }
 }
