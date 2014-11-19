@@ -36,6 +36,7 @@ pub struct Server<T> {
 ///
 /// In general, failure can come from either the HTTP request, JSON decoding, or the Alexandria
 /// server itself.
+#[deriving(Show)]
 pub enum Error {
     HttpError(hyper::HttpError),
     JsonError(json::DecoderError),
