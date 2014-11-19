@@ -110,11 +110,11 @@ trait Proto {
 }
 
 impl Proto for Auth {
-    fn proto(&self) -> &'static str { "https" }
+    fn proto(&self) -> &'static str { "http" }
 }
 
 impl Proto for Unauth {
-    fn proto(&self) -> &'static str { "https" }
+    fn proto(&self) -> &'static str { "http" }
 }
 
 impl Server<Unauth> {
