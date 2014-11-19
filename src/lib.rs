@@ -116,8 +116,7 @@ impl Proto for Unauth {
     fn proto(&self) -> &'static str { "https" }
 }
 
-// Generic methods should not be able to access privileged data.
-impl<T: Proto> Server<T> {
+impl Server<Unauth> {
     /// Create a new Alexandria server, located at the domain name `base`. When making HTTP
     /// requests, the path is appended to the `base`, with the appropriate protocol.
     ///
@@ -132,7 +131,10 @@ impl<T: Proto> Server<T> {
             Err(e) => Err(e)
         }
     }
+}
 
+// Generic methods should not be able to access privileged data.
+impl<T: Proto> Server<T> {
     /// Query for the first `count` books.
     pub fn get_books(&self, count: u32) -> APIResult<Vec<alexandria::Book>> {
         let base = self.base_url.as_slice();
