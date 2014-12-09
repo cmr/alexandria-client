@@ -169,8 +169,8 @@ impl Server<Unauth> {
                          .ok().expect("TODO: URLEncoding (not your fault)"));
 
         match res {
-            Ok(()) => return Ok(serv),
-            Err(e) => return Err(e)
+            Ok(()) | Err(_) => return Ok(serv),
+            // Err(e) => return Err(e)
         }
     }
 }
