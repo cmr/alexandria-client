@@ -8,7 +8,8 @@ extern crate serialize;
 extern crate url;
 
 use serialize::json;
-use hyper::{status, Url};
+use hyper::Url;
+use hyper::status::StatusCode;
 use hyper::client::Request;
 
 macro_rules! try_error {
@@ -70,10 +71,10 @@ fn do_req<'a, T, U>(url: Url, data: Option<T>,
     }
     let mut resp = try_error!(req.send(), Error::HttpError);
     match resp.status {
-        status::NotFound => return Err(Error::NotFound),
-        status::InternalServerError => return Err(Error::InternalError),
-        status::Unauthorized => return Err(Error::AuthError),
-        status::Ok => (),
+        StatusCode::NotFound => return Err(Error::NotFound),
+        StatusCode::InternalServerError => return Err(Error::InternalError),
+        StatusCode::Unauthorized => return Err(Error::AuthError),
+        StatusCode::Ok => (),
         _ => return Err(Error::ApiSaidNo),
     }
     let str = try_error!(resp.read_to_string(), Error::IoError);
@@ -182,7 +183,7 @@ impl Server<Auth> {
         let base = self.base_url.as_slice();
         // todo: deal with this allocation
         let ac = alexandria::ActionRequest {
-            action: alexandria::CheckOut,
+            action: alexandria::Action::CheckOut,
             isbn: isbn.to_string(),
             student_id: student_id.to_string()
         };
@@ -198,7 +199,7 @@ impl Server<Auth> {
     pub fn checkin(&self, isbn: &str, student_id: &str) -> APIResult<bool> {
         let base = self.base_url.as_slice();
         let ac = alexandria::ActionRequest {
-            action: alexandria::CheckIn,
+            action: alexandria::Action::CheckIn,
             isbn: isbn.to_string(),
             student_id: student_id.to_string()
         };

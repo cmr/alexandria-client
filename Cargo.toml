@@ -7,8 +7,6 @@ authors = ["Corey Richardson <corey@octayn.net>"]
 [dependencies.alexandria]
 git = "https://github.com/cmr/alexandria-common"
 
-[dependencies.hyper]
-git = "https://github.com/hyperium/hyper"
-
-[dependencies.url]
-git = "https://github.com/servo/rust-url"
+[dependencies]
+hyper = "*"
+url = "*"
